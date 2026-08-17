@@ -16,18 +16,24 @@ Table users {
 Table photos {
   id bigint [primary key, increment]
   user_id bigint [not null, note: 'L\'invité qui a uploadé la photo']
-  image_path varchar [not null, note: 'Chemin de stockage local ou S3']
+  image_path varchar [not null, note: 'Chemin de stockage local ou S3 (taille pleine, jusqu\'à 1920px de large)']
+  thumbnail_path varchar [note: 'Chemin de la miniature générée à l\'upload (jusqu\'à 480px de large), utilisée dans les grilles/galeries']
   original_filename varchar [not null]
   description text [note: 'Commentaire optionnel ajouté lors du dépôt de la photo']
   is_featured boolean [default: false, note: 'Permet aux admins de mettre la photo en avant']
-  
+
   // Intégration Google Drive
   is_synced_to_gdrive boolean [default: false]
   gdrive_file_id varchar [note: 'ID du fichier sur Google Drive une fois exporté']
   gdrive_synced_at timestamp
-  
+
   created_at timestamp
   updated_at timestamp
+
+  indexes {
+    (is_featured, created_at) [note: 'Filtre des photos mises en avant, triées par date']
+    (is_synced_to_gdrive, created_at) [note: 'Filtre des photos à synchroniser/synchronisées, triées par date']
+  }
 }
 
 Table comments {

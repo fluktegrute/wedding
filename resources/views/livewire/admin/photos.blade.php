@@ -29,7 +29,7 @@
                         <div wire:key="photo-{{ $photo->id }}" class="group relative overflow-hidden rounded-2xl bg-zinc-100 shadow-sm ring-1 ring-zinc-900/5">
                             <a href="{{ route('photos.show', $photo) }}" wire:navigate class="block">
                                 <img
-                                    src="{{ $photo->image_url }}"
+                                    src="{{ $photo->thumbnail_url }}"
                                     alt="{{ $photo->original_filename }}"
                                     loading="lazy"
                                     class="aspect-square size-full object-cover"
@@ -82,7 +82,7 @@
                     <div class="grid grid-cols-3 gap-2">
                         @foreach ($featuredPhotos as $photo)
                             <a href="{{ route('photos.show', $photo) }}" wire:navigate wire:key="featured-{{ $photo->id }}" class="block overflow-hidden rounded-xl">
-                                <img src="{{ $photo->image_url }}" alt="{{ $photo->original_filename }}" loading="lazy" class="aspect-square size-full object-cover">
+                                <img src="{{ $photo->thumbnail_url }}" alt="{{ $photo->original_filename }}" loading="lazy" class="aspect-square size-full object-cover">
                             </a>
                         @endforeach
                     </div>

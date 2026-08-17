@@ -2,15 +2,14 @@
 
 namespace App\Livewire\Admin;
 
+use App\Jobs\SyncPhotoWithGoogleDriveJob;
 use App\Models\Photo;
-use App\Services\GoogleDriveExporter;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Throwable;
 
 #[Title('Administration — Photos')]
 class Photos extends Component
@@ -29,21 +28,17 @@ class Photos extends Component
         $photo->save();
     }
 
-    public function toggleSync(Photo $photo, GoogleDriveExporter $exporter): void
+    public function toggleSync(Photo $photo): void
     {
         $this->authorize('syncToGdrive', $photo);
 
-        try {
-            if ($photo->is_synced_to_gdrive) {
-                $exporter->unsync($photo);
-            } else {
-                $exporter->export($photo);
-            }
-        } catch (Throwable $e) {
-            report($e);
+        $wasSynced = $photo->is_synced_to_gdrive;
 
-            Flux::toast(variant: 'danger', text: __('Échec de la synchronisation avec Google Drive.'));
-        }
+        SyncPhotoWithGoogleDriveJob::dispatch($photo, export: ! $wasSynced);
+
+        Flux::toast(variant: 'success', text: $wasSynced
+            ? __('Retrait de Google Drive lancé.')
+            : __('Synchronisation avec Google Drive lancée.'));
     }
 
     public function render(): View

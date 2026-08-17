@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property int $id
  * @property int $user_id L'invité qui a uploadé la photo
- * @property string $image_path Chemin de stockage local ou S3
+ * @property string $image_path Chemin de stockage local ou S3 (taille pleine)
+ * @property string|null $thumbnail_path Chemin de la miniature utilisée dans les grilles/galeries
  * @property string $original_filename
  * @property string|null $description Commentaire optionnel ajouté lors du dépôt de la photo
  * @property bool $is_featured Permet aux admins de mettre la photo en avant
@@ -25,9 +26,10 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $gdrive_synced_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read string $image_url URL publique de la photo sur le disque 'public'
+ * @property-read string $image_url URL publique de la photo (taille pleine) sur le disque 'public'
+ * @property-read string $thumbnail_url URL publique de la miniature sur le disque 'public' (retombe sur la taille pleine si absente)
  */
-#[Fillable(['image_path', 'original_filename', 'description'])]
+#[Fillable(['image_path', 'thumbnail_path', 'original_filename', 'description'])]
 class Photo extends Model
 {
     /** @use HasFactory<PhotoFactory> */
@@ -50,7 +52,7 @@ class Photo extends Model
     protected static function booted(): void
     {
         static::deleting(function (Photo $photo): void {
-            Storage::disk('public')->delete($photo->image_path);
+            Storage::disk('public')->delete(array_filter([$photo->image_path, $photo->thumbnail_path]));
         });
     }
 
@@ -93,6 +95,16 @@ class Photo extends Model
     {
         return Attribute::make(
             get: fn () => Storage::disk('public')->url($this->image_path),
+        );
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function thumbnailUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Storage::disk('public')->url($this->thumbnail_path ?? $this->image_path),
         );
     }
 }

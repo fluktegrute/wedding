@@ -192,6 +192,32 @@ class UploadTest extends TestCase
         $this->assertSame(600, $dimensions[1]);
     }
 
+    public function test_a_thumbnail_is_generated_alongside_the_full_size_image(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create());
+
+        $response = Livewire::test(Upload::class)
+            ->set('image', UploadedFile::fake()->image('mariage.jpg', 3000, 2000))
+            ->call('save');
+
+        $response->assertHasNoErrors();
+
+        $photo = Photo::first();
+
+        $this->assertNotNull($photo->thumbnail_path);
+        $this->assertNotSame($photo->image_path, $photo->thumbnail_path);
+
+        Storage::disk('public')->assertExists($photo->thumbnail_path);
+
+        $dimensions = getimagesize(Storage::disk('public')->path($photo->thumbnail_path));
+
+        $this->assertNotFalse($dimensions);
+        $this->assertSame(480, $dimensions[0]);
+        $this->assertSame(320, $dimensions[1]);
+    }
+
     public function test_guest_can_tag_a_photo_at_upload(): void
     {
         Storage::fake('public');

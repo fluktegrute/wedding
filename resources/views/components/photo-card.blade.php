@@ -13,7 +13,7 @@
     <flux:card size="sm" class="flex h-full flex-col gap-0 overflow-hidden rounded-3xl p-0! shadow-sm ring-1 ring-zinc-900/5 transition-shadow hover:shadow-md">
         <div class="relative {{ $aspect }} overflow-hidden bg-zinc-100">
             <img
-                src="{{ $photo->image_url }}"
+                src="{{ $photo->thumbnail_url }}"
                 alt="{{ $photo->original_filename }}"
                 loading="lazy"
                 class="size-full object-cover transition-transform duration-200 group-hover:scale-105"
