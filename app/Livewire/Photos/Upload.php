@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
+use Intervention\Image\MediaType;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -27,7 +28,10 @@ class Upload extends Component
     /** Largeur maximale, en pixels, des photos stockées (l'espace disque du serveur n'est pas illimité). */
     private const MAX_WIDTH = 1920;
 
-    #[Validate('required|image|max:10240')]
+    /** SVG et autres formats vectoriels/scriptables volontairement exclus : traités par Imagick, ils exposent
+     *  à des failles de type ImageTragick (délégués MSL/URL). Seuls les formats raster réellement utilisés
+     *  par l'application sont acceptés. */
+    #[Validate('required|mimes:jpg,jpeg,png,webp,heic,heif|max:10240')]
     public ?UploadedFile $image = null;
 
     #[Validate('nullable|string|max:1000')]
@@ -86,7 +90,9 @@ class Upload extends Component
 
         $encoded = $isHeic ? $resized->toJpeg() : $resized->encode();
 
-        $extension = $isHeic ? 'jpg' : Str::lower($image->getClientOriginalExtension());
+        // L'extension de stockage vient du format réellement produit par Imagick, jamais du nom de
+        // fichier fourni par le client : ce dernier est falsifiable (ex. "exploit.php" avec un contenu image).
+        $extension = MediaType::create($encoded->mediaType())->fileExtension()->value;
 
         $path = 'photos/'.Str::random(40).'.'.$extension;
 

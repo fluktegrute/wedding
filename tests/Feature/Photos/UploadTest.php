@@ -89,9 +89,45 @@ class UploadTest extends TestCase
             ->set('image', UploadedFile::fake()->create('document.pdf', 100))
             ->call('save');
 
-        $response->assertHasErrors(['image' => 'image']);
+        $response->assertHasErrors(['image' => 'mimes']);
 
         $this->assertDatabaseCount('photos', 0);
+    }
+
+    public function test_svg_files_are_rejected(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create());
+
+        $response = Livewire::test(Upload::class)
+            ->set('image', UploadedFile::fake()->create('exploit.svg', 10))
+            ->call('save');
+
+        $response->assertHasErrors(['image' => 'mimes']);
+
+        $this->assertDatabaseCount('photos', 0);
+    }
+
+    public function test_stored_file_extension_is_derived_from_actual_image_content_not_client_filename(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create());
+
+        $image = UploadedFile::fake()->image('malicious.asp', 10, 10)->mimeType('image/jpeg');
+
+        $response = Livewire::test(Upload::class)
+            ->set('image', $image)
+            ->call('save');
+
+        $response->assertHasNoErrors();
+
+        $photo = Photo::first();
+
+        $this->assertSame('malicious.asp', $photo->original_filename);
+        $this->assertStringEndsWith('.jpg', $photo->image_path);
+        $this->assertStringNotContainsString('.asp', $photo->image_path);
     }
 
     public function test_heic_photos_are_converted_to_jpg_on_upload(): void
