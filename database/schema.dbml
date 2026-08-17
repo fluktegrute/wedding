@@ -1,0 +1,84 @@
+// ==========================================
+// Application de Photos de Mariage (Stack TALL)
+// ==========================================
+
+Table users {
+  id bigint [primary key, increment]
+  name varchar [not null]
+  email varchar [unique, not null]
+  password varchar [not null]
+  is_admin boolean [default: false, note: 'Détermine si l\'utilisateur peut mettre en avant/exporter des photos']
+  remember_token varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table photos {
+  id bigint [primary key, increment]
+  user_id bigint [not null, note: 'L\'invité qui a uploadé la photo']
+  image_path varchar [not null, note: 'Chemin de stockage local ou S3']
+  original_filename varchar [not null]
+  description text [note: 'Commentaire optionnel ajouté lors du dépôt de la photo']
+  is_featured boolean [default: false, note: 'Permet aux admins de mettre la photo en avant']
+  
+  // Intégration Google Drive
+  is_synced_to_gdrive boolean [default: false]
+  gdrive_file_id varchar [note: 'ID du fichier sur Google Drive une fois exporté']
+  gdrive_synced_at timestamp
+  
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table comments {
+  id bigint [primary key, increment]
+  photo_id bigint [not null]
+  user_id bigint [not null]
+  body text [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reactions {
+  id bigint [primary key, increment]
+  photo_id bigint [not null]
+  user_id bigint [not null]
+  emoji varchar(50) [not null, note: 'Code ou caractère de l\'emoji (ex: 👍, ❤️)']
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (photo_id, user_id) [unique, note: 'Un utilisateur ne peut laisser qu\'une seule réaction par photo (optionnel)']
+  }
+}
+
+Table tags {
+  id bigint [primary key, increment]
+  name varchar [not null, unique, note: 'Créé par les admins (ex: Cérémonie, Cocktail, Soirée)']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table photo_tag {
+  id bigint [primary key, increment]
+  photo_id bigint [not null]
+  tag_id bigint [not null]
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (photo_id, tag_id) [unique]
+  }
+}
+
+// ==========================================
+// Relations (Foreign Keys)
+// ==========================================
+
+Ref: photos.user_id > users.id [delete: cascade]
+Ref: comments.photo_id > photos.id [delete: cascade]
+Ref: comments.user_id > users.id [delete: cascade]
+Ref: reactions.photo_id > photos.id [delete: cascade]
+Ref: reactions.user_id > users.id [delete: cascade]
+Ref: photo_tag.photo_id > photos.id [delete: cascade]
+Ref: photo_tag.tag_id > tags.id [delete: cascade]

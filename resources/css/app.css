@@ -1,0 +1,98 @@
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+
+/*
+ * Neutralise complètement le mode sombre : on ne bascule jamais la classe
+ * .dark nulle part, donc plus aucune classe dark: (y compris celles des
+ * composants Flux vendor) ne peut s'activer, quel que soit le thème système.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'DM Serif Display', ui-serif, Georgia, serif;
+
+    /* Palette florale de l'application de mariage */
+    --color-cream: #fffaf4;
+    --color-ink: #4b4b4b;
+    --color-blossom: #e4a6bd;
+    --color-sage: #d9e4dd;
+    --color-willow: #f9f49f;
+    --color-periwinkle: #a6b8ce;
+    --color-honey: #f1d49f;
+
+    --color-zinc-50: #fffaf4;
+    --color-zinc-100: #f7f1e7;
+    --color-zinc-200: #ece4d6;
+    --color-zinc-300: #d8cfc0;
+    --color-zinc-400: #b7ada3;
+    --color-zinc-500: #948b84;
+    --color-zinc-600: #726b66;
+    --color-zinc-700: #5b5654;
+    --color-zinc-800: #4b4b4b;
+    --color-zinc-900: #363636;
+    --color-zinc-950: #232323;
+
+    --color-accent: var(--color-blossom);
+    --color-accent-content: var(--color-blossom);
+    --color-accent-foreground: var(--color-ink);
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-zinc-200, currentColor);
+    }
+}
+
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply  !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-white;
+}
+
+/*
+ * Bandeau de fleurs en filigrane, fixé en bas du viewport derrière tout le
+ * contenu. `background-repeat-x` fait qu'il court sur toute la largeur quelle
+ * que soit la taille d'écran, sans jamais capter le pointeur.
+ */
+.floral-backdrop {
+    position: fixed;
+    inset: auto 0 0 0;
+    height: 15rem;
+    background-image: url('/images/flowers-bottom.png');
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 15rem;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@media (max-width: 640px) {
+    .floral-backdrop {
+        height: 9rem;
+        background-size: auto 9rem;
+    }
+}
+
+/* \[:where(&)\]:size-4 {
+    @apply size-4;
+} */
