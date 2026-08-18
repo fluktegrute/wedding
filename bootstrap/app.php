@@ -16,6 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
         ]);
+
+        // Fait confiance aux en-têtes X-Forwarded-* envoyés par le reverse proxy (réseaux privés
+        // uniquement) pour que Laravel détecte correctement le HTTPS d'origine, l'IP cliente et
+        // génère des URLs cohérentes avec APP_URL malgré une connexion HTTP en interne.
+        $middleware->trustProxies(at: [
+            '10.0.0.0/8',
+            '172.16.0.0/12',
+            '192.168.0.0/16',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
