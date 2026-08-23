@@ -32,8 +32,10 @@
                     :href="route('photos.show', $previousPhoto)"
                     wire:navigate
                     icon="chevron-left"
+                    icon:variant="solid"
+                    icon:class="size-5"
                     variant="filled"
-                    class="absolute! top-1/2 start-3 -translate-y-1/2 rounded-full shadow-sm"
+                    class="absolute! top-1/2 start-3 -translate-y-1/2 rounded-full bg-black/60! text-white! shadow-lg hover:bg-black/80!"
                     :aria-label="__('Photo précédente')"
                 />
             @endif
@@ -43,8 +45,10 @@
                     :href="route('photos.show', $nextPhoto)"
                     wire:navigate
                     icon="chevron-right"
+                    icon:variant="solid"
+                    icon:class="size-5"
                     variant="filled"
-                    class="absolute! top-1/2 end-3 -translate-y-1/2 rounded-full shadow-sm"
+                    class="absolute! top-1/2 end-3 -translate-y-1/2 rounded-full bg-black/60! text-white! shadow-lg hover:bg-black/80!"
                     :aria-label="__('Photo suivante')"
                 />
             @endif
