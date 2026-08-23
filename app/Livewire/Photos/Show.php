@@ -33,6 +33,36 @@ class Show extends Component
     }
 
     /**
+     * The next photo in the gallery order (more recent than the current one), if any.
+     */
+    protected function previousPhoto(): ?Photo
+    {
+        return Photo::query()
+            ->where('created_at', '>', $this->photo->created_at)
+            ->orWhere(fn ($query) => $query
+                ->where('created_at', $this->photo->created_at)
+                ->where('id', '>', $this->photo->id))
+            ->oldest()
+            ->oldest('id')
+            ->first();
+    }
+
+    /**
+     * The previous photo in the gallery order (older than the current one), if any.
+     */
+    protected function nextPhoto(): ?Photo
+    {
+        return Photo::query()
+            ->where('created_at', '<', $this->photo->created_at)
+            ->orWhere(fn ($query) => $query
+                ->where('created_at', $this->photo->created_at)
+                ->where('id', '<', $this->photo->id))
+            ->latest()
+            ->latest('id')
+            ->first();
+    }
+
+    /**
      * Delete the photo, its comments and reactions (author or admin only).
      */
     public function deletePhoto(): void
@@ -133,6 +163,8 @@ class Show extends Component
             'comments' => $this->photo->comments()->with('user')->oldest()->get(),
             'reactionsSummary' => $this->reactionsSummary($reactions),
             'userReactionEmoji' => $reactions->firstWhere('user_id', Auth::id())?->emoji,
+            'previousPhoto' => $this->previousPhoto(),
+            'nextPhoto' => $this->nextPhoto(),
         ]);
     }
 }

@@ -22,7 +22,7 @@ class Upload extends Component
     /** SVG et autres formats vectoriels/scriptables volontairement exclus : traités par Imagick, ils exposent
      *  à des failles de type ImageTragick (délégués MSL/URL). Seuls les formats raster réellement utilisés
      *  par l'application sont acceptés. */
-    #[Validate('required|mimes:jpg,jpeg,png,webp,heic,heif|max:10240')]
+    #[Validate('required|mimes:jpg,jpeg,png,webp,heic,heif|max:32768')]
     public ?UploadedFile $image = null;
 
     #[Validate('nullable|string|max:1000')]

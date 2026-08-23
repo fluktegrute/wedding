@@ -1,4 +1,4 @@
-<nav class="fixed inset-x-0 bottom-0 z-20">
+<nav class="fixed inset-x-0 bottom-0 z-20 lg:hidden">
     <div class="relative mx-auto flex max-w-md items-center justify-around border-t border-zinc-200 bg-white/95 px-2 pt-2 shadow-[0_-4px_16px_-8px_rgba(75,75,75,0.15)] backdrop-blur" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom))">
         <a
             href="{{ route('dashboard') }}"

@@ -26,6 +26,28 @@
                     {{ __('En avant') }}
                 </flux:badge>
             @endif
+
+            @if ($previousPhoto)
+                <flux:button
+                    :href="route('photos.show', $previousPhoto)"
+                    wire:navigate
+                    icon="chevron-left"
+                    variant="filled"
+                    class="absolute! top-1/2 start-3 -translate-y-1/2 rounded-full shadow-sm"
+                    :aria-label="__('Photo précédente')"
+                />
+            @endif
+
+            @if ($nextPhoto)
+                <flux:button
+                    :href="route('photos.show', $nextPhoto)"
+                    wire:navigate
+                    icon="chevron-right"
+                    variant="filled"
+                    class="absolute! top-1/2 end-3 -translate-y-1/2 rounded-full shadow-sm"
+                    :aria-label="__('Photo suivante')"
+                />
+            @endif
         </div>
 
         <div class="flex flex-col gap-4 p-6">

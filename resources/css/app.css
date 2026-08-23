@@ -52,6 +52,24 @@
     ::file-selector-button {
         border-color: var(--color-zinc-200, currentColor);
     }
+
+    /*
+     * Tailwind v4 laisse le curseur "default" sur les boutons (contrairement
+     * à v3). Sans "cursor: pointer" explicite, iOS Safari peut ignorer les
+     * taps sur les éléments cliquables qui ne sont pas des <a href>/<button>
+     * natifs (ex. wire:click sur un <div>/<span>) : on force donc le curseur
+     * pointer sur tout élément cliquable pour garantir le tap sur iOS.
+     */
+    button:not(:disabled),
+    [type='button']:not(:disabled),
+    [type='submit']:not(:disabled),
+    [type='reset']:not(:disabled),
+    [role='button'],
+    a[href],
+    [wire\:click],
+    [wire\:navigate] {
+        cursor: pointer;
+    }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {

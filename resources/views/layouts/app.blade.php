@@ -14,7 +14,7 @@
             <x-user-menu />
         </flux:header>
 
-        <flux:main container class="pb-28">
+        <flux:main container class="pb-28 lg:pb-8">
             {{ $slot }}
         </flux:main>
 
